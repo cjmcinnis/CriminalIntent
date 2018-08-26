@@ -1,5 +1,7 @@
 package com.cmcinnis.craig.criminalintent;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
 
@@ -22,8 +24,10 @@ public class Crime {
         mTitle = title;
     }
 
-    public Date getDate() {
-        return mDate;
+    public String getDateAsString() {
+        SimpleDateFormat format = new SimpleDateFormat("EEEE, MMMM dd, yyyy");
+
+        return format.format(mDate);
     }
 
     public void setDate(Date date) {
