@@ -83,13 +83,4 @@ public class CrimePagerActivity extends AppCompatActivity {
         });
     }
 
-    //Change to the first item in the list
-    public void goToFirstItem(){
-        mViewPager.setCurrentItem(0);
-    }
-
-    //Change to the last item in the list
-    public void goToLastItem(){
-        mViewPager.setCurrentItem(mCrimes.size() - 1);
-    }
 }

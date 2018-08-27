@@ -30,6 +30,10 @@ public class Crime {
         return format.format(mDate);
     }
 
+    public Date getDate() {
+        return mDate;
+    }
+
     public void setDate(Date date) {
         mDate = date;
     }
