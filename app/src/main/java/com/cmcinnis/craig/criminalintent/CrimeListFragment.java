@@ -43,7 +43,7 @@ public class CrimeListFragment extends Fragment {
     @Override
     public void onResume(){
         super.onResume();
-        //for updating the UI when returning from a CrimeActivity
+        //for updating the UI when returning from a CrimePagerActivity
         updateUI();
     }
 
@@ -93,8 +93,8 @@ public class CrimeListFragment extends Fragment {
         @Override
         public void onClick(View v) {
             // start a crimeactivity when a row is clicked, pass the ID
-            Intent intent = CrimeActivity.newIntent(getActivity(), mCrime.getId());
-            startActivityForResult(intent, REQUEST_CRIME);
+            Intent intent = CrimePagerActivity.newIntent(getActivity(), mCrime.getId());
+            startActivity(intent);
             mLastAdapterPosition = this.getAdapterPosition();
         }
 
