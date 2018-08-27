@@ -23,4 +23,5 @@ public class CrimeActivity extends SingleFrameActivity {
         return intent;
 
     }
+
 }

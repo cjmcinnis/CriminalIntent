@@ -1,6 +1,7 @@
 package com.cmcinnis.craig.criminalintent;
 
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
@@ -73,6 +74,7 @@ public class CrimeFragment extends Fragment {
 
         return v;
     }
+
 
     public static CrimeFragment newInstance(UUID crimeId){
         Bundle args = new Bundle();

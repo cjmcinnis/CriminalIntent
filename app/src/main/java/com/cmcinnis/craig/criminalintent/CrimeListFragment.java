@@ -1,5 +1,6 @@
 package com.cmcinnis.craig.criminalintent;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.media.Image;
 import android.os.Bundle;
@@ -19,6 +20,9 @@ import java.util.List;
 public class CrimeListFragment extends Fragment {
     private RecyclerView mCrimeRecyclerView;
     private CrimeAdapter mAdapter;
+    private static final int REQUEST_CRIME = 1;
+    private int mLastAdapterPosition;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater,
@@ -27,6 +31,9 @@ public class CrimeListFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_crime_list, container, false);
         mCrimeRecyclerView = (RecyclerView) view.findViewById(R.id.crime_recycler_view);
         mCrimeRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        //default of -1 so notifyItemChanged is not used unless a row has been clicked
+        mLastAdapterPosition = -1;
 
         updateUI();
 
@@ -47,9 +54,17 @@ public class CrimeListFragment extends Fragment {
         if(mAdapter == null) {
             mAdapter = new CrimeAdapter(crimes);
             mCrimeRecyclerView.setAdapter(mAdapter);
-        }else{
-            mAdapter.notifyDataSetChanged();
+        }else {
+
+            //if our LastAdapterPosition has been set then update the item clicked,
+            //else update everything
+            if (mLastAdapterPosition >= 0) {
+                mAdapter.notifyItemChanged(mLastAdapterPosition);
+            } else {
+                mAdapter.notifyDataSetChanged();
+            }
         }
+
     }
 
     private class CrimeHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -77,10 +92,12 @@ public class CrimeListFragment extends Fragment {
 
         @Override
         public void onClick(View v) {
-            // start a crimeactivity when a row is clicked
+            // start a crimeactivity when a row is clicked, pass the ID
             Intent intent = CrimeActivity.newIntent(getActivity(), mCrime.getId());
-            startActivity(intent);
+            startActivityForResult(intent, REQUEST_CRIME);
+            mLastAdapterPosition = this.getAdapterPosition();
         }
+
     }
 
     private class CrimeAdapter extends RecyclerView.Adapter<CrimeHolder>{
