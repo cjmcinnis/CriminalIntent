@@ -30,6 +30,12 @@ public class Crime {
         return format.format(mDate);
     }
 
+    public String getHourMinute() {
+        SimpleDateFormat format = new SimpleDateFormat("hh:mm a");
+
+        return format.format(mDate);
+    }
+
     public Date getDate() {
         return mDate;
     }

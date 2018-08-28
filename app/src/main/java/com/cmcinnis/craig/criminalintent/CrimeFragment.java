@@ -25,10 +25,13 @@ public class CrimeFragment extends Fragment {
     private Crime mCrime;
     private EditText mTitleField;
     private Button mDateButton;
+    private Button mTimeDayButton;
     private CheckBox mSolvedCheckBox;
     private static final String ARG_CRIME_ID = "crime_id";
     private static final String DIALOG_DATE = "DialogDate";
+    private static final String DIALOG_TIME = "DialogTime";
     private static final int REQUEST_DATE  = 0;
+    private static final int REQUEST_TIME  = 1;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -48,11 +51,23 @@ public class CrimeFragment extends Fragment {
             return;
         }
 
+        // if returning from a DatePickerFragment
         if(requestCode == REQUEST_DATE){
             Date date = (Date) data.getSerializableExtra(DatePickerFragment.EXTRA_DATE);
             mCrime.setDate(date);
             updateDate();
         }
+
+        // if returning from a TimePickerFragment
+        if(requestCode == REQUEST_TIME){
+            Date date = (Date) data.getSerializableExtra(TimePickerFragment.EXTRA_TIME);
+            mCrime.setDate(date);
+            updateTime();
+        }
+    }
+
+    private void updateTime() {
+        mTimeDayButton.setText(mCrime.getHourMinute());
     }
 
     private void updateDate() {
@@ -96,6 +111,22 @@ public class CrimeFragment extends Fragment {
                 dialog.show(manager, DIALOG_DATE);
             }
         });
+
+        mTimeDayButton = (Button) v.findViewById(R.id.crime_date_day);
+        updateTime();
+        mTimeDayButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                //create a TimePickerFragment and add it to the fragment manager
+                FragmentManager manager = getFragmentManager();
+                TimePickerFragment dialog = TimePickerFragment
+                        .newInstance(mCrime.getDate());
+                //tell the new fragment where to send the result
+                dialog.setTargetFragment(CrimeFragment.this, REQUEST_TIME);
+                dialog.show(manager, DIALOG_TIME);
+            }
+        });
+
 
         mSolvedCheckBox = (CheckBox) v.findViewById(R.id.crime_solved);
         mSolvedCheckBox.setChecked(mCrime.isSolved());
