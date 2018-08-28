@@ -15,6 +15,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,6 +25,8 @@ import java.util.List;
 public class CrimeListFragment extends Fragment {
     private RecyclerView mCrimeRecyclerView;
     private CrimeAdapter mAdapter;
+    private View mNoCrimesView;
+    private Button mNewCrimeButton;
 
     private static final int REQUEST_CRIME = 1;
     private static final String SAVED_SUBTITLE_VISIBLE = "subtitle";
@@ -55,6 +58,16 @@ public class CrimeListFragment extends Fragment {
             mSubtitleVisible = savedInstanceState.getBoolean(SAVED_SUBTITLE_VISIBLE);
         }
 
+        mNoCrimesView = (View) view.findViewById(R.id.no_crimes_present_view);
+
+        mNewCrimeButton = (Button) view.findViewById(R.id.new_crime_main) ;
+        mNewCrimeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                createNewCrime();
+            }
+        });
+
         updateUI();
 
         return view;
@@ -81,6 +94,8 @@ public class CrimeListFragment extends Fragment {
         if(mAdapter == null) {
             mAdapter = new CrimeAdapter(crimes);
             mCrimeRecyclerView.setAdapter(mAdapter);
+
+
         }else {
 
             //if our LastAdapterPosition has been set then update the item clicked,
@@ -90,6 +105,14 @@ public class CrimeListFragment extends Fragment {
             //} else {
                 mAdapter.notifyDataSetChanged();
             //}
+        }
+
+        //if there are no crimes present, show the no crimes message and display new crime butt.
+        if(mAdapter.getItemCount() > 0)
+        {
+            mNoCrimesView.setVisibility(View.GONE);
+        }else{
+            mNoCrimesView.setVisibility(View.VISIBLE);
         }
 
         updateSubtitle(); //update subtitle menu for # of crimes
@@ -189,10 +212,7 @@ public class CrimeListFragment extends Fragment {
             case R.id.new_crime:
                 //if new crime button was selected, then create crime and add to CrimeLab,
                 //then create a new CrimePagerActivity intent with the added crime and start it
-                Crime crime = new Crime();
-                CrimeLab.get(getActivity()).addCrime(crime);
-                Intent intent = CrimePagerActivity.newIntent(getActivity(), crime.getId());
-                startActivity(intent);
+                createNewCrime();
                 return true;
             case R.id.show_subtitle:
                 mSubtitleVisible = !mSubtitleVisible; //set subtitle visibility to opposite of current
@@ -203,6 +223,14 @@ public class CrimeListFragment extends Fragment {
                 //item Id is not handled
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    //create a new crime and start a CrimePagerActivity for it
+    private void createNewCrime() {
+        Crime crime = new Crime();
+        CrimeLab.get(getActivity()).addCrime(crime);
+        Intent intent = CrimePagerActivity.newIntent(getActivity(), crime.getId());
+        startActivity(intent);
     }
 
     private void updateSubtitle(){
