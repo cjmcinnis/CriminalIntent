@@ -6,9 +6,13 @@ import android.media.Image;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -20,9 +24,20 @@ import java.util.List;
 public class CrimeListFragment extends Fragment {
     private RecyclerView mCrimeRecyclerView;
     private CrimeAdapter mAdapter;
-    private static final int REQUEST_CRIME = 1;
-    private int mLastAdapterPosition;
 
+    private static final int REQUEST_CRIME = 1;
+    private static final String SAVED_SUBTITLE_VISIBLE = "subtitle";
+
+    private int mLastAdapterPosition;
+    private boolean mSubtitleVisible;
+
+
+    @Override
+    public void onCreate(Bundle savedInstanceState){
+        super.onCreate(savedInstanceState);
+        //tell the FragmentManager that we have a menu
+        setHasOptionsMenu(true);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater,
@@ -35,9 +50,21 @@ public class CrimeListFragment extends Fragment {
         //default of -1 so notifyItemChanged is not used unless a row has been clicked
         mLastAdapterPosition = -1;
 
+        if(savedInstanceState != null){
+            //retrieve status of subtitle menu button during rotate
+            mSubtitleVisible = savedInstanceState.getBoolean(SAVED_SUBTITLE_VISIBLE);
+        }
+
         updateUI();
 
         return view;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState){
+        super.onSaveInstanceState(outState);
+        //store status subtitle menu button
+        outState.putBoolean(SAVED_SUBTITLE_VISIBLE, mSubtitleVisible);
     }
 
     @Override
@@ -65,6 +92,7 @@ public class CrimeListFragment extends Fragment {
             }
         }
 
+        updateSubtitle(); //update subtitle menu for # of crimes
     }
 
     private class CrimeHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -136,5 +164,57 @@ public class CrimeListFragment extends Fragment {
             else
                 return R.layout.list_item_crime;
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater){
+        super.onCreateOptionsMenu(menu, inflater);
+
+        //Create the add crime button in the menu
+        inflater.inflate(R.menu.fragment_crime_list, menu);
+
+        //when recreating the view, first check what the last status of subtitle was chosen
+        MenuItem subtitleItem = menu.findItem(R.id.show_subtitle);
+        if(mSubtitleVisible){
+            subtitleItem.setTitle(R.string.hide_subtitle);
+        }else{
+            subtitleItem.setTitle(R.string.show_subtitle);
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        //check which item menu was selected
+        switch(item.getItemId()){
+            case R.id.new_crime:
+                //if new crime button was selected, then create crime and add to CrimeLab,
+                //then create a new CrimePagerActivity intent with the added crime and start it
+                Crime crime = new Crime();
+                CrimeLab.get(getActivity()).addCrime(crime);
+                Intent intent = CrimePagerActivity.newIntent(getActivity(), crime.getId());
+                startActivity(intent);
+                return true;
+            case R.id.show_subtitle:
+                mSubtitleVisible = !mSubtitleVisible; //set subtitle visibility to opposite of current
+                getActivity().invalidateOptionsMenu(); //redraw the menu
+                updateSubtitle();
+                return true;
+            default:
+                //item Id is not handled
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void updateSubtitle(){
+        CrimeLab crimeLab = CrimeLab.get(getActivity());
+        int crimeCount = crimeLab.getCrimes().size();
+        String subtitle = getString(R.string.subtitle_format, crimeCount);
+
+        if(!mSubtitleVisible){
+            subtitle = null;
+        }
+
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        activity.getSupportActionBar().setSubtitle(subtitle);
     }
 }
