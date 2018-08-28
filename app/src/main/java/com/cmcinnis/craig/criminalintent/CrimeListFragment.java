@@ -85,11 +85,11 @@ public class CrimeListFragment extends Fragment {
 
             //if our LastAdapterPosition has been set then update the item clicked,
             //else update everything
-            if (mLastAdapterPosition >= 0) {
-                mAdapter.notifyItemChanged(mLastAdapterPosition);
-            } else {
+            //if (mLastAdapterPosition >= 0) {
+            //    mAdapter.notifyItemChanged(mLastAdapterPosition);
+            //} else {
                 mAdapter.notifyDataSetChanged();
-            }
+            //}
         }
 
         updateSubtitle(); //update subtitle menu for # of crimes

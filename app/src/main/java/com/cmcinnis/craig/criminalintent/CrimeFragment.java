@@ -9,6 +9,9 @@ import android.support.v4.app.FragmentManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -40,6 +43,9 @@ public class CrimeFragment extends Fragment {
 
         UUID crimeId = (UUID) getArguments().getSerializable(ARG_CRIME_ID);
         mCrime = CrimeLab.get(getActivity()).getCrime(crimeId);
+
+        //tell fragmentmanager we have an options menu
+        setHasOptionsMenu(true);
 
 
     }
@@ -148,5 +154,31 @@ public class CrimeFragment extends Fragment {
         CrimeFragment fragment = new CrimeFragment();
         fragment.setArguments(args);
         return fragment;
+    }
+
+    //create menu item for deleting a crime
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater){
+        super.onCreateOptionsMenu(menu, inflater);
+
+        //Create the delete crime button in the menu
+        inflater.inflate(R.menu.fragment_crime, menu);
+    }
+
+    //called when menu item is selected
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        //check which item menu was selected
+        switch(item.getItemId()){
+            case R.id.delete_crime:
+                //if delete crime button was selected, then delete the crime and send user back to
+                //crimefragmentlist
+                CrimeLab.get(getActivity()).deleteCrime(mCrime);
+                getActivity().finish();
+                return true;
+            default:
+                //item Id is not handled
+                return super.onOptionsItemSelected(item);
+        }
     }
 }
