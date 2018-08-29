@@ -103,7 +103,8 @@ public class CrimeListFragment extends Fragment {
             //if (mLastAdapterPosition >= 0) {
             //    mAdapter.notifyItemChanged(mLastAdapterPosition);
             //} else {
-                mAdapter.notifyDataSetChanged();
+            mAdapter.setCrimes(crimes);
+            mAdapter.notifyDataSetChanged();
             //}
         }
 
@@ -186,6 +187,10 @@ public class CrimeListFragment extends Fragment {
                 return R.layout.list_item_crime_police;
             else
                 return R.layout.list_item_crime;
+        }
+
+        public void setCrimes(List<Crime> crimes){
+            mCrimes = crimes;
         }
     }
 
